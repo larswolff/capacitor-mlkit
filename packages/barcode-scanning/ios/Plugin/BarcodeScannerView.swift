@@ -43,6 +43,14 @@ public protocol BarcodeScannerViewDelegate {
         guard let captureDevice = captureDevice else {
             throw RuntimeError(implementation.plugin.errorNoCaptureDeviceAvailable)
         }
+        
+        // Adjust focus settings for better barcode scanning
+        try? captureDevice.lockForConfiguration()
+        if captureDevice.isFocusModeSupported(.continuousAutoFocus) {
+            captureDevice.focusMode = .continuousAutoFocus
+        }
+        captureDevice.unlockForConfiguration()
+        
         var deviceInput: AVCaptureDeviceInput
         deviceInput = try AVCaptureDeviceInput(device: captureDevice)
         if captureSession.canAddInput(deviceInput) {
